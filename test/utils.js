@@ -6,7 +6,7 @@ const EthRPC = require('ethjs-rpc');
 const ethRPC = new EthRPC(new HttpProvider('http://localhost:7545'));
 
 const utils = {
-  increaseTime: async seconds =>
+  increaseTime: seconds =>
     new Promise((resolve, reject) => ethRPC.sendAsync({
       method: 'evm_increaseTime',
       params: [seconds],

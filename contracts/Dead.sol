@@ -7,9 +7,16 @@ contract Dead {
   uint public heartbeatPeriod;
   uint public lastHeartbeat;
 
+  modifier onlyOwner {
+    require(msg.sender == owner);
+    _;
+  }
+
   function Dead() internal {}
 
-  function heartbeat() public {}
+  function heartbeat() public onlyOwner {
+    lastHeartbeat = now;
+  }
 
   /*
    * ETHER
