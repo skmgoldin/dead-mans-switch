@@ -12,7 +12,13 @@ contract Dead {
     _;
   }
 
-  function Dead() public {}
+  function Dead(address _beneficiary, address _owner, uint _heartbeatPeriod)
+  public {
+    beneficiary = _beneficiary;
+    owner = _owner;
+    heartbeatPeriod = _heartbeatPeriod;
+    lastHeartbeat = now;
+  }
 
   function heartbeat() public onlyOwner {
     lastHeartbeat = now;
