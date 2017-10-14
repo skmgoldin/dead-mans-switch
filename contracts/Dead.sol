@@ -12,7 +12,7 @@ contract Dead {
     _;
   }
 
-  function Dead() internal {}
+  function Dead() public {}
 
   function heartbeat() public onlyOwner {
     lastHeartbeat = now;
