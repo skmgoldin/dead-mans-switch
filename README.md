@@ -1,5 +1,7 @@
 # Dead Man's Switch
 
+[ ![Codeship Status for skmgoldin/dead-mans-switch](https://app.codeship.com/projects/055a3890-97ed-0135-6eb6-6ebb5ac2ea05/status?branch=master)](https://app.codeship.com/projects/251961)
+
 A smart contract for managing cryptoassets after shrugging off your mortal coil.
 
 ## How it works
