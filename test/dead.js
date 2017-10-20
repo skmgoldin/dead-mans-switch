@@ -96,7 +96,7 @@ contract('Dead', (accounts) => {
 
 contract('Dead', (accounts) => {
   describe('Function: withdrawERC20', () => {
-    const [owner] = accounts;
+    const [owner, beneficiary] = accounts;
 
     it('should allow the owner to withdraw tokens before lastPeriod + heartbeatPeriod',
       async () => {
@@ -117,7 +117,26 @@ contract('Dead', (accounts) => {
           'the owner was unable to withdraw tokens when they should have been able to');
       });
 
-    it('should not allow a beneficiary to withdraw tokens before lastPeriod + heartbeatPeriod');
+    it('should not allow a beneficiary to withdraw tokens before lastPeriod + heartbeatPeriod',
+      async () => {
+        const dead = await Dead.deployed();
+        const token = await Token.deployed();
+
+        const beneficiaryInitialBalance = await token.balanceOf.call(beneficiary);
+
+        const ownerInitialBalance = await token.balanceOf.call(owner);
+        await utils.depositTokens(owner, ownerInitialBalance, dead.address);
+
+        try {
+          await utils.as(beneficiary, dead.withdrawERC20, token.address);
+        } catch (err) {
+          assert(utils.isEVMException(err), err.toString());
+        }
+
+        const beneficiaryFinalBalance = await token.balanceOf.call(beneficiary);
+        assert(beneficiaryFinalBalance.eq(beneficiaryInitialBalance),
+          'the beneficiary was able to withdraw tokens when they should not have been able to');
+      });
     it('should allow a beneficiary to withdraw tokens after lastPeriod + heartbeatPeriod');
     it('should fire an event indicating the amount of tokens withdrawn, the token\'s ' +
        'symbol and its address');
