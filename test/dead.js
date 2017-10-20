@@ -78,8 +78,7 @@ contract('Dead', (accounts) => {
 
       const tokenOwnerInitialBalance = await token.balanceOf.call(tokenOwner);
 
-      await utils.as(tokenOwner, token.approve, dead.address, tokenOwnerInitialBalance);
-      const receipt = await utils.as(tokenOwner, dead.depositERC20, token.address);
+      const receipt = await utils.depositTokens(tokenOwner, tokenOwnerInitialBalance, dead.address);
 
       assert.strictEqual(utils.getReceiptValue(receipt, '_addr').toString(), token.address);
       assert.strictEqual(utils.getReceiptValue(receipt, '_amount').toString(), '1000');
@@ -98,6 +97,7 @@ contract('Dead', (accounts) => {
 contract('Dead', () => {
   describe('Function: withdrawERC20', () => {
     it('should allow the owner to withdraw tokens before lastPeriod + heartbeatPeriod');
+
     it('should not allow a beneficiary to withdraw tokens before lastPeriod + heartbeatPeriod');
     it('should allow a beneficiary to withdraw tokens after lastPeriod + heartbeatPeriod');
     it('should fire an event indicating the amount of tokens withdrawn, the token\'s ' +
