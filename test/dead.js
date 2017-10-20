@@ -96,7 +96,7 @@ contract('Dead', (accounts) => {
 
 contract('Dead', (accounts) => {
   describe('Function: withdrawERC20', () => {
-    const [owner, beneficiary] = accounts;
+    const [owner, beneficiary, bigNerd] = accounts;
 
     it('should allow the owner to withdraw tokens before lastPeriod + heartbeatPeriod',
       async () => {
@@ -137,10 +137,51 @@ contract('Dead', (accounts) => {
         assert(beneficiaryFinalBalance.eq(beneficiaryInitialBalance),
           'the beneficiary was able to withdraw tokens when they should not have been able to');
       });
-    it('should allow a beneficiary to withdraw tokens after lastPeriod + heartbeatPeriod');
+
     it('should not allow anybody other than the beneficiary to withdraw tokens after lastPeriod ' +
-       'heartbeatPeriod');
-    it('should fire an event indicating the amount of tokens withdrawn, the token\'s ' +
-       'symbol and its address');
+       'heartbeatPeriod', async () => {
+      const dead = await Dead.deployed();
+      const token = await Token.deployed();
+
+      const bigNerdInitialBalance = await token.balanceOf.call(beneficiary);
+
+      const heartbeatPeriod = await dead.heartbeatPeriod.call();
+      await utils.increaseTime(heartbeatPeriod);
+      try {
+        await utils.as(bigNerd, dead.withdrawERC20, token.address);
+      } catch (err) {
+        assert(utils.isEVMException(err), err.toString());
+      }
+
+      const bigNerdFinalBalance = await token.balanceOf.call(beneficiary);
+      assert(bigNerdFinalBalance.eq(bigNerdInitialBalance),
+        'someone other than the beneficiary or owner was able to withdraw tokens');
+    });
+
+    it('should allow a beneficiary to withdraw tokens after lastPeriod + heartbeatPeriod',
+      async () => {
+        const dead = await Dead.deployed();
+        const token = await Token.deployed();
+
+        const beneficiaryInitialBalance = await token.balanceOf.call(beneficiary);
+        const deadInitialBalance = await token.balanceOf.call(dead.address);
+
+        await utils.as(beneficiary, dead.withdrawERC20, token.address);
+
+        const beneficiaryFinalBalance = await token.balanceOf.call(beneficiary);
+        assert(beneficiaryFinalBalance.eq(beneficiaryInitialBalance.add(deadInitialBalance)),
+          'the beneficiary was not able to withdraw tokens when they should have been able to');
+      });
+
+    it('should fire an event indicating the amount of tokens withdrawn ' +
+       'and its address', async () => {
+      const dead = await Dead.deployed();
+      const token = await Token.deployed();
+
+      const receipt = await utils.as(beneficiary, dead.withdrawERC20, token.address);
+
+      assert.strictEqual(utils.getReceiptValue(receipt, '_addr').toString(), token.address);
+      assert.strictEqual(utils.getReceiptValue(receipt, '_amount').toString(), '0');
+    });
   });
 });
