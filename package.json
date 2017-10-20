@@ -1,7 +1,7 @@
 {
-  "name": "AdChainRegistry",
+  "name": "dead-mans-switch",
   "version": "0.0.1",
-  "description": "AdChain node module",
+  "description": "A dead man's switch for ERC 20 tokens",
   "scripts": {
     "compile": "truffle compile",
     "deploy-rinkeby": "truffle migrate --network rinkeby",
