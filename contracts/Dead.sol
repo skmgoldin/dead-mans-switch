@@ -5,6 +5,7 @@ import "./token/HumanStandardToken.sol";
 contract Dead {
 
   event erc20_deposit(uint _amount, address _addr);
+  event erc20_withdraw(uint _amount, address _addr);
   
   address public beneficiary;
   address public owner;
@@ -49,6 +50,16 @@ contract Dead {
     erc20_deposit(balanceToTransfer, _tokenAddr);
   }
 
-  function withdrawERC20(address _tokenAddr) public {}
+  function withdrawERC20(address _tokenAddr) public {
+    HumanStandardToken token = HumanStandardToken(_tokenAddr);
+
+    uint balanceToTransfer = token.balanceOf(this);
+
+    token.transfer(msg.sender, balanceToTransfer);
+    assert(token.balanceOf(this) == 0);
+    assert(token.balanceOf(this) >= 0);
+
+    erc20_withdraw(balanceToTransfer, _tokenAddr);
+  }
 
 }
