@@ -23,7 +23,9 @@ contract('Dead', (accounts) => {
 
       const finalLastHeartbeat = await dead.lastHeartbeat.call();
 
-      assert(finalLastHeartbeat.eq(initialLastHeartbeat.add(timeToHeartbeat)),
+      assert(finalLastHeartbeat.gte(initialLastHeartbeat.add(timeToHeartbeat.sub(new BN('10', 10)))),
+        'lastHeartbeat was not incremented as-expected');
+      assert(finalLastHeartbeat.lte(initialLastHeartbeat.add(timeToHeartbeat.add(new BN('10', 10)))),
         'lastHeartbeat was not incremented as-expected');
     });
 
