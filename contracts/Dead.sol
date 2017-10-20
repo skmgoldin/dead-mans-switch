@@ -51,6 +51,11 @@ contract Dead {
   }
 
   function withdrawERC20(address _tokenAddr) public {
+    require(msg.sender == owner || msg.sender == beneficiary);
+    if(msg.sender == beneficiary) {
+      require(now > (lastHeartbeat + heartbeatPeriod));
+    }
+
     HumanStandardToken token = HumanStandardToken(_tokenAddr);
 
     uint balanceToTransfer = token.balanceOf(this);
