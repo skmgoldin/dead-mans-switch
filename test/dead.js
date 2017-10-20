@@ -138,6 +138,8 @@ contract('Dead', (accounts) => {
           'the beneficiary was able to withdraw tokens when they should not have been able to');
       });
     it('should allow a beneficiary to withdraw tokens after lastPeriod + heartbeatPeriod');
+    it('should not allow anybody other than the beneficiary to withdraw tokens after lastPeriod ' +
+       'heartbeatPeriod');
     it('should fire an event indicating the amount of tokens withdrawn, the token\'s ' +
        'symbol and its address');
   });
