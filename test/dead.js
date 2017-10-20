@@ -94,9 +94,28 @@ contract('Dead', (accounts) => {
   });
 });
 
-contract('Dead', () => {
+contract('Dead', (accounts) => {
   describe('Function: withdrawERC20', () => {
-    it('should allow the owner to withdraw tokens before lastPeriod + heartbeatPeriod');
+    const [owner] = accounts;
+
+    it('should allow the owner to withdraw tokens before lastPeriod + heartbeatPeriod',
+      async () => {
+        const dead = await Dead.deployed();
+        const token = await Token.deployed();
+
+        const ownerInitialBalance = await token.balanceOf.call(owner);
+
+        await utils.depositTokens(owner, ownerInitialBalance, dead.address);
+
+        assert((await token.balanceOf.call(owner)).eq(new BN('0', 10)),
+          'tokens were not deposited successfully');
+
+        await utils.as(owner, dead.withdrawERC20, token.address);
+
+        const ownerFinalBalance = await token.balanceOf.call(owner);
+        assert(ownerFinalBalance.eq(ownerInitialBalance),
+          'the owner was unable to withdraw tokens when they should have been able to');
+      });
 
     it('should not allow a beneficiary to withdraw tokens before lastPeriod + heartbeatPeriod');
     it('should allow a beneficiary to withdraw tokens after lastPeriod + heartbeatPeriod');
