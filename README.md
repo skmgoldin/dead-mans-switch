@@ -14,7 +14,18 @@ Deposit Ether or ERC-20 tokens using the respective deposit functions. As the de
 
 ## Test
 
-## Setup
+`npm run test`
 
 ## Deploy
+
+Deploying to a network other than the testRPC requires a `secrets.json` file with a mnemonic whose account on the `m/44'/60'/0'/0` path is funded with Ether for the network being deployed to.
+
+The `secrets.json` file should be in the following form:
+```
+{
+  "mnemonic": "my very good mnemonic"
+}
+```
+
+Rinkeby: `npm run deploy-rinkeby`
 
