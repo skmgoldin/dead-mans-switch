@@ -1,6 +1,10 @@
 pragma solidity ^0.4.15;
 
+import "./token/HumanStandardToken.sol";
+
 contract Dead {
+
+  event erc20_deposit(uint _amount, address _addr);
   
   address public beneficiary;
   address public owner;
@@ -34,7 +38,16 @@ contract Dead {
   /*
    * ERC-20
    */
-  function depositERC20(address _tokenAddr) public {}
+  function depositERC20(address _tokenAddr) public {
+    HumanStandardToken token = HumanStandardToken(_tokenAddr);
+
+    uint balanceToTransfer = token.balanceOf(msg.sender);
+
+    token.transferFrom(msg.sender, this, balanceToTransfer);
+    assert(token.balanceOf(this) >= balanceToTransfer);
+
+    erc20_deposit(balanceToTransfer, _tokenAddr);
+  }
 
   function withdrawERC20(address _tokenAddr) public {}
 
