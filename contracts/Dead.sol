@@ -29,16 +29,6 @@ contract Dead {
     lastHeartbeat = now;
   }
 
-  /*
-   * ETHER
-   */
-  function depositEther() public {}
-
-  function withdrawEther() public {}
-
-  /*
-   * ERC-20
-   */
   function depositERC20(address _tokenAddr) public {
     HumanStandardToken token = HumanStandardToken(_tokenAddr);
 

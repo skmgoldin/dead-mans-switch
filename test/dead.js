@@ -48,21 +48,6 @@ contract('Dead', (accounts) => {
   });
 });
 
-contract('Dead', () => {
-  describe('Function: depositEther', () => {
-    it('should fire an event indicating the amount of ether deposited');
-  });
-});
-
-contract('Dead', () => {
-  describe('Function: withdrawEther', () => {
-    it('should allow the owner to withdraw ether before lastPeriod + heartbeatPeriod');
-    it('should not allow a beneficiary to withdraw ether before lastPeriod + heartbeatPeriod');
-    it('should allow a beneficiary to withdraw ether after lastPeriod + heartbeatPeriod');
-    it('should fire an event indicating the amount of ether withdrawn');
-  });
-});
-
 contract('Dead', (accounts) => {
   describe('Function: depositERC20', () => {
     const [owner, tokenOwner] = accounts;
