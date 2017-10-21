@@ -71,7 +71,6 @@ contract Dead {
 
     token.transfer(msg.sender, balanceToTransfer);
     assert(token.balanceOf(this) == 0);
-    assert(token.balanceOf(this) >= 0);
 
     erc20_withdraw(balanceToTransfer, _tokenAddr);
   }
