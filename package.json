@@ -16,7 +16,7 @@
     "bip39": "2.4.0",
     "ethjs-provider-http": "0.1.6",
     "ethjs-rpc": "0.1.7",
-    "truffle": "beta",
+    "truffle": "4.0.5",
     "truffle-hdwallet-provider": "0.0.3"
   },
   "devDependencies": {

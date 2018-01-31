@@ -51,7 +51,7 @@ const utils = {
   },
 
   isEVMException: err => (
-    err.toString().includes('invalid opcode')
+    err.toString().includes('revert')
   ),
 
   getReceiptValue: (receipt, arg) => receipt.logs[0].args[arg],
