@@ -23,7 +23,7 @@ contract('Dead', (accounts) => {
         assert((await token.balanceOf.call(owner)).eq(new BN('0', 10)),
           'tokens were not deposited successfully');
 
-        await utils.as(owner, dead.withdrawERC20, token.address);
+        await utils.as(owner, dead.withdrawERC20, token.address, ownerInitialBalance);
 
         const ownerFinalBalance = await token.balanceOf.call(owner);
         assert(ownerFinalBalance.eq(ownerInitialBalance),
@@ -41,7 +41,7 @@ contract('Dead', (accounts) => {
         await utils.depositTokens(owner, ownerInitialBalance, dead.address);
 
         try {
-          await utils.as(beneficiary, dead.withdrawERC20, token.address);
+          await utils.as(beneficiary, dead.withdrawERC20, token.address, ownerInitialBalance);
         } catch (err) {
           assert(utils.isEVMException(err), err.toString());
         }
@@ -57,11 +57,12 @@ contract('Dead', (accounts) => {
       const token = await Token.deployed();
 
       const bigNerdInitialBalance = await token.balanceOf.call(beneficiary);
+      const deadInitialBalance = await token.balanceOf.call(dead.address);
 
       const heartbeatPeriod = await dead.heartbeatPeriod.call();
       await utils.increaseTime(heartbeatPeriod);
       try {
-        await utils.as(bigNerd, dead.withdrawERC20, token.address);
+        await utils.as(bigNerd, dead.withdrawERC20, token.address, deadInitialBalance);
       } catch (err) {
         assert(utils.isEVMException(err), err.toString());
       }
@@ -79,7 +80,7 @@ contract('Dead', (accounts) => {
         const beneficiaryInitialBalance = await token.balanceOf.call(beneficiary);
         const deadInitialBalance = await token.balanceOf.call(dead.address);
 
-        await utils.as(beneficiary, dead.withdrawERC20, token.address);
+        await utils.as(beneficiary, dead.withdrawERC20, token.address, deadInitialBalance);
 
         const beneficiaryFinalBalance = await token.balanceOf.call(beneficiary);
         assert(beneficiaryFinalBalance.eq(beneficiaryInitialBalance.add(deadInitialBalance)),
@@ -91,7 +92,7 @@ contract('Dead', (accounts) => {
       const dead = await Dead.deployed();
       const token = await Token.deployed();
 
-      const receipt = await utils.as(beneficiary, dead.withdrawERC20, token.address);
+      const receipt = await utils.as(beneficiary, dead.withdrawERC20, token.address, '0');
 
       assert.strictEqual(utils.getReceiptValue(receipt, '_addr').toString(), token.address);
       assert.strictEqual(utils.getReceiptValue(receipt, '_amount').toString(), '0');

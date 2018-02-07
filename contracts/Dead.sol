@@ -55,24 +55,23 @@ contract Dead {
   }
 
   /**
-  @notice if you are the owner, you can call this function any time. If you are a beneficiary, you can call it after the owner has died. If you are anybody else, you can't call it. Calling this function will withdraw all of the deposited tokens for the token at the provided addess
+  @dev if you are the owner, you can call this function any time. If you are a beneficiary, you can call it after the owner has died. If you are anybody else, you can't call it.
   @dev returns deposited tokens to msg.sender
   @param _tokenAddr the address of the ERC-20 token being withdrawn
+  @param _amount the number of tokens to withdraw
   */
-  function withdrawERC20(address _tokenAddr) public {
+  function withdrawERC20(address _tokenAddr, uint _amount) public {
+    EIP20 token = EIP20(_tokenAddr);
+
+    require(_amount <= token.balanceOf(this));
     require(msg.sender == owner || msg.sender == beneficiary);
     if(msg.sender == beneficiary) {
       require(now > (lastHeartbeat + heartbeatPeriod));
     }
 
-    EIP20 token = EIP20(_tokenAddr);
+    require(token.transfer(msg.sender, _amount));
 
-    uint balanceToTransfer = token.balanceOf(this);
-
-    token.transfer(msg.sender, balanceToTransfer);
-    assert(token.balanceOf(this) == 0);
-
-    erc20_withdraw(balanceToTransfer, _tokenAddr);
+    erc20_withdraw(_amount, _tokenAddr);
   }
 
 }
