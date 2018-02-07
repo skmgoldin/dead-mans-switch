@@ -56,7 +56,7 @@ contract('Dead', (accounts) => {
       const dead = await Dead.deployed();
       const token = await Token.deployed();
 
-      const bigNerdInitialBalance = await token.balanceOf.call(beneficiary);
+      const bigNerdInitialBalance = await token.balanceOf.call(bigNerd);
       const deadInitialBalance = await token.balanceOf.call(dead.address);
 
       const heartbeatPeriod = await dead.heartbeatPeriod.call();
