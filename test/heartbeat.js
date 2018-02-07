@@ -3,7 +3,7 @@
 
 const Dead = artifacts.require('Dead.sol');
 
-const utils = require('./utils.js');
+const { as, increaseTime, isEVMException } = require('./utils.js');
 const BN = require('bignumber.js');
 
 contract('Dead', (accounts) => {
@@ -17,8 +17,8 @@ contract('Dead', (accounts) => {
 
       const initialLastHeartbeat = await dead.lastHeartbeat.call();
 
-      await utils.increaseTime(timeToHeartbeat.toNumber());
-      await utils.as(owner, dead.heartbeat);
+      await increaseTime(timeToHeartbeat.toNumber());
+      await as(owner, dead.heartbeat);
 
       const finalLastHeartbeat = await dead.lastHeartbeat.call();
 
@@ -34,9 +34,9 @@ contract('Dead', (accounts) => {
       const initialLastHeartbeat = await dead.lastHeartbeat.call();
 
       try {
-        await utils.as(beneficiary, dead.heartbeat);
+        await as(beneficiary, dead.heartbeat);
       } catch (err) {
-        assert(utils.isEVMException(err), err.toString());
+        assert(isEVMException(err), err.toString());
       }
 
       const finalLastHeartbeat = await dead.lastHeartbeat.call();

@@ -4,7 +4,7 @@
 const Dead = artifacts.require('Dead.sol');
 const Token = artifacts.require('tokens/eip20/EIP20.sol');
 
-const utils = require('./utils.js');
+const { as, depositTokens, getReceiptValue } = require('./utils.js');
 const BN = require('bignumber.js');
 
 contract('Dead', (accounts) => {
@@ -18,14 +18,14 @@ contract('Dead', (accounts) => {
 
       const ownerInitialBalance = await token.balanceOf.call(owner);
 
-      await utils.as(owner, token.transfer, tokenOwner, ownerInitialBalance);
+      await as(owner, token.transfer, tokenOwner, ownerInitialBalance);
 
       const tokenOwnerInitialBalance = await token.balanceOf.call(tokenOwner);
 
-      const receipt = await utils.depositTokens(tokenOwner, tokenOwnerInitialBalance, dead.address);
+      const receipt = await depositTokens(tokenOwner, tokenOwnerInitialBalance, dead.address);
 
-      assert.strictEqual(utils.getReceiptValue(receipt, '_addr').toString(), token.address);
-      assert.strictEqual(utils.getReceiptValue(receipt, '_amount').toString(), '1000');
+      assert.strictEqual(getReceiptValue(receipt, '_addr').toString(), token.address);
+      assert.strictEqual(getReceiptValue(receipt, '_amount').toString(), '1000');
 
       const tokenOwnerFinalBalance = await token.balanceOf.call(tokenOwner);
       assert(tokenOwnerFinalBalance.eq(new BN('0', 10)),
