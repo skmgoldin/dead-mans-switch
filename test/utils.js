@@ -2,7 +2,7 @@
 /* global artifacts */
 
 const Dead = artifacts.require('./token/Dead.sol');
-const Token = artifacts.require('./token/HumanStandardToken.sol');
+const Token = artifacts.require('tokens/eip20/EIP20.sol');
 
 const HttpProvider = require('ethjs-provider-http');
 const EthRPC = require('ethjs-rpc');

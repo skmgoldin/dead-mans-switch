@@ -1,6 +1,6 @@
 pragma solidity ^0.4.15;
 
-import "./token/HumanStandardToken.sol";
+import "tokens/eip20/EIP20.sol";
 
 contract Dead {
 
@@ -44,7 +44,7 @@ contract Dead {
   @param _tokenAddr the address of the ERC-20 token being deposited
   */
   function depositERC20(address _tokenAddr) public {
-    HumanStandardToken token = HumanStandardToken(_tokenAddr);
+    EIP20 token = EIP20(_tokenAddr);
 
     uint balanceToTransfer = token.balanceOf(msg.sender);
 
@@ -65,7 +65,7 @@ contract Dead {
       require(now > (lastHeartbeat + heartbeatPeriod));
     }
 
-    HumanStandardToken token = HumanStandardToken(_tokenAddr);
+    EIP20 token = EIP20(_tokenAddr);
 
     uint balanceToTransfer = token.balanceOf(this);
 

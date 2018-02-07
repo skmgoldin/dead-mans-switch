@@ -2,7 +2,7 @@
 /* global assert artifacts contract */
 
 const Dead = artifacts.require('Dead.sol');
-const Token = artifacts.require('./tokens/HumanStandardToken.sol');
+const Token = artifacts.require('tokens/eip20/EIP20.sol');
 
 const utils = require('./utils.js');
 const BN = require('bignumber.js');

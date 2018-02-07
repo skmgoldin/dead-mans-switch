@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "A dead man's switch for ERC 20 tokens",
   "scripts": {
+    "install": "truffle install tokens",
     "compile": "truffle compile",
     "deploy-rinkeby": "truffle migrate --network rinkeby",
     "test": "npm run lint && truffle test",

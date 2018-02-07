@@ -10,7 +10,7 @@ Deposit ERC-20 tokens using the deposit function. As the dead man, you must invo
 
 ## Install
 
-`npm i && npm run compile`
+`npm i && npm run install && npm run compile`
 
 ## Test
 
