@@ -12,6 +12,8 @@ const conf = JSON.parse(fs.readFileSync('./conf/config.json'));
 contract('Dead', (accounts) => {
   describe('Function: heartbeat', () => {
     const [owner, beneficiary] = accounts;
+    const revertFail = 'Tx expected to revert did not revert';
+    const accountabilityFail = 'An unaccountable state change occurred';
 
     it('should increment lastHeartbeat by heartbeatPeriod', async () => {
       const dead = await Dead.deployed();
@@ -35,6 +37,7 @@ contract('Dead', (accounts) => {
 
     it('should not let a non-owner increment lastHeartbeat', async () => {
       const dead = await Dead.deployed();
+      const errMsg = 'A non-owner was able to increment lastHeartbeat';
 
       const initialLastHeartbeat = await dead.lastHeartbeat.call();
 
@@ -42,12 +45,15 @@ contract('Dead', (accounts) => {
         await as(beneficiary, dead.heartbeat);
       } catch (err) {
         assert(isEVMException(err), err.toString());
+
+        const finalLastHeartbeat = await dead.lastHeartbeat.call();
+        assert(finalLastHeartbeat.eq(initialLastHeartbeat),
+          `${accountabilityFail}. ${errMsg}`);
+
+        return;
       }
 
-      const finalLastHeartbeat = await dead.lastHeartbeat.call();
-
-      assert(finalLastHeartbeat.eq(initialLastHeartbeat),
-        'A non-owner was able to increment lastHeartbeat');
+      assert(false, `${revertFail}. ${errMsg}`);
     });
   });
 });

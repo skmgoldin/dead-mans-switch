@@ -9,6 +9,8 @@ const { as, depositTokens, increaseTime, isEVMException, getReceiptValue } = req
 contract('Dead', (accounts) => {
   describe('Function: withdrawERC20', () => {
     const [owner, beneficiary, bigNerd] = accounts;
+    const revertFail = 'Tx expected to revert did not revert';
+    const accountabilityFail = 'An unaccountable state change occurred';
 
     it('should allow the owner to withdraw tokens before lastPeriod + heartbeatPeriod',
       async () => {
@@ -43,12 +45,13 @@ contract('Dead', (accounts) => {
           assert(isEVMException(err), err.toString());
 
           const beneficiaryFinalBalance = await token.balanceOf.call(beneficiary);
-          assert(beneficiaryFinalBalance.eq(beneficiaryInitialBalance), errMsg);
+          assert(beneficiaryFinalBalance.eq(beneficiaryInitialBalance),
+            `${accountabilityFail}. ${errMsg}`);
 
           return;
         }
 
-        assert(false, errMsg);
+        assert(false, `${revertFail}. ${errMsg}`);
       });
 
     it('should not allow anybody other than the beneficiary to withdraw tokens after lastPeriod ' +
@@ -68,12 +71,12 @@ contract('Dead', (accounts) => {
         assert(isEVMException(err), err.toString());
 
         const bigNerdFinalBalance = await token.balanceOf.call(beneficiary);
-        assert(bigNerdFinalBalance.eq(bigNerdInitialBalance), errMsg);
+        assert(bigNerdFinalBalance.eq(bigNerdInitialBalance), `${accountabilityFail}. ${errMsg}`);
 
         return;
       }
 
-      assert(false, errMsg);
+      assert(false, `${revertFail}. ${errMsg}`);
     });
 
     it('should allow a beneficiary to withdraw tokens after lastPeriod + heartbeatPeriod',
