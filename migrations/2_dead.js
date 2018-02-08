@@ -1,10 +1,19 @@
 /* global artifacts */
 
+const fs = require('fs');
+
 const Dead = artifacts.require('Dead.sol');
 
-module.exports = (deployer, network, accounts) => {
-  const [owner, beneficiary] = accounts;
+const conf = JSON.parse(fs.readFileSync('../conf/config.json'));
 
-  deployer.deploy(Dead, beneficiary, owner, 100);
+module.exports = (deployer, network, accounts) => {
+  let owner = conf.owner;
+  let beneficiary = conf.beneficiary;
+
+  if (network === 'test') {
+    [owner, beneficiary] = accounts;
+  }
+
+  deployer.deploy(Dead, beneficiary, owner, conf.heartbeat);
 };
 
