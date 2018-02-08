@@ -25,7 +25,8 @@ contract('Dead', (accounts) => {
       assert.strictEqual(getReceiptValue(receipt, '_addr').toString(), token.address, logFail);
       assert.strictEqual(getReceiptValue(receipt, '_amount').toString(), '1000', logFail);
 
-      // Check for accountability errors
+      // Check for accountability errors. The owner deposited all their tokens, so their balance
+      // should be zero and the DMS balance should be equal to the owner's initial balance
       const ownerFinalBalance = await token.balanceOf.call(owner);
       assert(ownerFinalBalance.eq(new BN('0', 10)),
         `${accountabilityFail}. the token owner's balance was not properly decremented`);

@@ -58,7 +58,7 @@ contract('Dead', (accounts) => {
       });
 
     it('should not allow anybody other than the beneficiary to withdraw tokens after lastPeriod ' +
-       'heartbeatPeriod', async () => {
+       '+ heartbeatPeriod', async () => {
       const dead = await Dead.deployed();
       const token = await Token.deployed();
       const errMsg = 'someone other than the beneficiary or owner was able to withdraw tokens';
@@ -104,21 +104,22 @@ contract('Dead', (accounts) => {
           'the beneficiary was not able to withdraw tokens when they should have been able to');
       });
 
-    it('should fire an event indicating the amount of tokens withdrawn ' +
-       'and its address', async () => {
-      const dead = await Dead.deployed();
-      const token = await Token.deployed();
+    it('should fire an event indicating the amount of tokens withdrawn and the token\'s address',
+      async () => {
+        const dead = await Dead.deployed();
+        const token = await Token.deployed();
 
-      // The contract is empty now, but zero withdrawals are supposed to succeed. Get a receipt
-      // for such a withdrawal
-      const deadInitialBalance = await token.balanceOf.call(dead.address);
-      const receipt = await as(beneficiary, dead.withdrawERC20, token.address, deadInitialBalance);
+        // The contract is empty now, but zero withdrawals are supposed to succeed. Get a receipt
+        // for such a withdrawal
+        const deadInitialBalance = await token.balanceOf.call(dead.address);
+        const receipt = await as(beneficiary, dead.withdrawERC20, token.address,
+          deadInitialBalance);
 
-      // Accountability checks
-      assert.strictEqual(getReceiptValue(receipt, '_addr').toString(), token.address);
-      assert.strictEqual(getReceiptValue(receipt, '_amount').toString(),
-        deadInitialBalance.toString(10));
-    });
+        // Accountability checks
+        assert.strictEqual(getReceiptValue(receipt, '_addr').toString(), token.address);
+        assert.strictEqual(getReceiptValue(receipt, '_amount').toString(),
+          deadInitialBalance.toString(10));
+      });
   });
 });
 
