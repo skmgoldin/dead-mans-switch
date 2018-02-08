@@ -18,6 +18,8 @@ Deposit ERC-20 tokens using the deposit function. As the dead man, you must invo
 
 ## Deploy
 
+Use the config file at `conf/config.json` to specify the owner, beneficiary and heartbeat period for the dead man's switch.
+
 Deploying to a network other than the testRPC requires a `secrets.json` file with a mnemonic whose account on the `m/44'/60'/0'/0` path is funded with Ether for the network being deployed to.
 
 The `secrets.json` file should be in the following form:
