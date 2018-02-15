@@ -23,8 +23,7 @@ contract Dead {
   @param _owner can withdraw tokens at any time, must try to stay alive
   @param _heartbeatPeriod the interval (in seconds) after which the owner is considered dead if no heartbeat it received
   */
-  function Dead(address _beneficiary, address _owner, uint _heartbeatPeriod)
-  public {
+  function Dead(address _beneficiary, address _owner, uint _heartbeatPeriod) public {
     beneficiary = _beneficiary;
     owner = _owner;
     heartbeatPeriod = _heartbeatPeriod;
@@ -42,16 +41,17 @@ contract Dead {
   @notice make sure to have approved this contract to transfer from your balance before calling this. Note that you cannot get these tokens out again unless you are the owner, or if you are the beneficiary and the owner has died
   @dev deposits ERC-20 tokens into the switch
   @param _tokenAddr the address of the ERC-20 token being deposited
+  @param _amount the number of tokens to deposit
   */
-  function depositERC20(address _tokenAddr) public {
+  function depositERC20(address _tokenAddr, uint _amount) public {
     EIP20 token = EIP20(_tokenAddr);
 
-    uint balanceToTransfer = token.balanceOf(msg.sender);
+    require(_amount <= token.balanceOf(msg.sender));
 
-    token.transferFrom(msg.sender, this, balanceToTransfer);
-    assert(token.balanceOf(this) >= balanceToTransfer);
+    token.transferFrom(msg.sender, this, _amount);
+    assert(token.balanceOf(this) >= _amount);
 
-    erc20_deposit(balanceToTransfer, _tokenAddr);
+    erc20_deposit(_amount, _tokenAddr);
   }
 
   /**
@@ -65,7 +65,7 @@ contract Dead {
 
     require(_amount <= token.balanceOf(this));
     require(msg.sender == owner || msg.sender == beneficiary);
-    if(msg.sender == beneficiary) {
+    if (msg.sender == beneficiary) {
       require(now > (lastHeartbeat + heartbeatPeriod));
     }
 
