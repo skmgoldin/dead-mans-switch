@@ -47,8 +47,9 @@ contract Dead {
     EIP20 token = EIP20(_tokenAddr);
 
     require(_amount <= token.balanceOf(msg.sender));
+    require(_amount <= token.allowance(msg.sender, this));
 
-    token.transferFrom(msg.sender, this, _amount);
+    require(token.transferFrom(msg.sender, this, _amount));
     assert(token.balanceOf(this) >= _amount);
 
     erc20_deposit(_amount, _tokenAddr);
