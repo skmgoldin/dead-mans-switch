@@ -46,13 +46,10 @@ contract('Dead', (accounts) => {
       const dmsInitialBalance = await token.balanceOf.call(dead.address);
 
       //Attempt to deposit more tokens to the DMS than allowed
-      const attemptDepositAmount = ownerInitialBalance + 1;
+      const attemptDepositAmount = ownerInitialBalance.add(new BN('1', 10));
 
       try {
         await depositTokens(owner, attemptDepositAmount, dead.address);
-        //The deposit was successful
-        assert(false, errMsg);
-
       } catch (error) {
         assert(isEVMException(error), error.toString());
 
@@ -63,7 +60,10 @@ contract('Dead', (accounts) => {
         assert(ownerFinalBalance.eq(ownerInitialBalance), errMsg);
         assert(dmsFinalBalance.eq(dmsInitialBalance), errMsg);
         
+        return;
       }
+      //The deposit was successful
+      assert(false, errMsg);
     });
 
     it('should not allow a negative deposit', async () => {
@@ -76,7 +76,7 @@ contract('Dead', (accounts) => {
       const dmsInitialBalance = await token.balanceOf.call(dead.address);
 
       //Attempt to deposit more tokens to the DMS than allowed
-      const attemptDepositAmount = -1;
+      const attemptDepositAmount = new BN('-1', 10)
 
       try {
         await depositTokens(owner, attemptDepositAmount, dead.address);
