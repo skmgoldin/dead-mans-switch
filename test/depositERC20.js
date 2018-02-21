@@ -80,8 +80,6 @@ contract('Dead', (accounts) => {
 
       try {
         await depositTokens(owner, attemptDepositAmount, dead.address);
-        // The deposit was successful
-        assert(false, errMsg);
       } catch (error) {
         assert(isEVMException(error), error.toString());
 
@@ -91,7 +89,12 @@ contract('Dead', (accounts) => {
         // Check that neither account balance changed
         assert(ownerFinalBalance.eq(ownerInitialBalance), errMsg);
         assert(dmsFinalBalance.eq(dmsInitialBalance), errMsg);
+
+        return;
       }
+
+      // The deposit was successful
+      assert(false, errMsg);
     });
   });
 });
