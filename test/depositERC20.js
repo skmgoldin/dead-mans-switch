@@ -41,11 +41,11 @@ contract('Dead', (accounts) => {
       const token = await Token.deployed();
       const errMsg = 'the owner was able to deposit with an amount greater than their initial balance';
 
-      //Record the initial balances of both accounts
+      // Record the initial balances of both accounts
       const ownerInitialBalance = await token.balanceOf.call(owner);
       const dmsInitialBalance = await token.balanceOf.call(dead.address);
 
-      //Attempt to deposit more tokens to the DMS than allowed
+      // Attempt to deposit more tokens to the DMS than allowed
       const attemptDepositAmount = ownerInitialBalance.add(new BN('1', 10));
 
       try {
@@ -56,13 +56,13 @@ contract('Dead', (accounts) => {
         const ownerFinalBalance = await token.balanceOf.call(owner);
         const dmsFinalBalance = await token.balanceOf.call(dead.address);
 
-        //Check that neither account balance changed
+        // Check that neither account balance changed
         assert(ownerFinalBalance.eq(ownerInitialBalance), errMsg);
         assert(dmsFinalBalance.eq(dmsInitialBalance), errMsg);
-        
+
         return;
       }
-      //The deposit was successful
+      // The deposit was successful
       assert(false, errMsg);
     });
 
@@ -71,31 +71,28 @@ contract('Dead', (accounts) => {
       const token = await Token.deployed();
       const errMsg = 'the owner was able to deposit a negative amount';
 
-      //Record the initial balances of both accounts
+      // Record the initial balances of both accounts
       const ownerInitialBalance = await token.balanceOf.call(owner);
       const dmsInitialBalance = await token.balanceOf.call(dead.address);
 
-      //Attempt to deposit more tokens to the DMS than allowed
-      const attemptDepositAmount = new BN('-1', 10)
+      // Attempt to deposit more tokens to the DMS than allowed
+      const attemptDepositAmount = new BN('-1', 10);
 
       try {
         await depositTokens(owner, attemptDepositAmount, dead.address);
-        //The deposit was successful
+        // The deposit was successful
         assert(false, errMsg);
-
       } catch (error) {
         assert(isEVMException(error), error.toString());
 
         const ownerFinalBalance = await token.balanceOf.call(owner);
         const dmsFinalBalance = await token.balanceOf.call(dead.address);
 
-        //Check that neither account balance changed
+        // Check that neither account balance changed
         assert(ownerFinalBalance.eq(ownerInitialBalance), errMsg);
         assert(dmsFinalBalance.eq(dmsInitialBalance), errMsg);
-        
       }
     });
-
   });
 });
 
