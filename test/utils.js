@@ -61,7 +61,7 @@ const utils = {
     const token = await Token.deployed();
 
     await utils.as(from, token.approve, to, amount);
-    return utils.as(from, dead.depositERC20, token.address);
+    return utils.as(from, dead.depositERC20, token.address, amount);
   },
 };
 
