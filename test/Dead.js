@@ -23,7 +23,7 @@ contract('Dead', (accounts) => {
       const storedBeneficiary = await dead.beneficiary.call();
 
       // Compare the stored data to that in the conf file, or in the case of the owner and
-      // beneficiary, the first two available accounts (see migrations/2_dead.js).
+      // beneficiary, the first two available accounts (see the beforeEach).
       assert.strictEqual(storedHeartbeatPeriod.toString(10), conf.heartbeat,
         'The heartbeat was not stored properly');
       assert.strictEqual(storedOwner, owner, 'The owner was not stored properly');
