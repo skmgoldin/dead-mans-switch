@@ -77,11 +77,11 @@ const utils = {
 
   getReceiptValue: (receipt, arg) => receipt.logs[0].args[arg],
 
-  depositTokens: async (from, amount, to) => {
-    const dead = await Dead.deployed();
-    const token = await Token.deployed();
+  depositTokens: async (tokenAddr, from, amount, deadAddr) => {
+    const token = Token.at(tokenAddr);
+    const dead = Dead.at(deadAddr);
 
-    await utils.as(from, token.approve, to, amount);
+    await utils.as(from, token.approve, dead.address, amount);
     return utils.as(from, dead.depositERC20, token.address, amount);
   },
 };
