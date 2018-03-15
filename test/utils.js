@@ -3,6 +3,7 @@
 
 const Dead = artifacts.require('./token/Dead.sol');
 const Token = artifacts.require('tokens/eip20/EIP20.sol');
+const ProxyFactory = artifacts.require('ProxyFactory.sol');
 
 const HttpProvider = require('ethjs-provider-http');
 const EthRPC = require('ethjs-rpc');
@@ -10,6 +11,26 @@ const EthRPC = require('ethjs-rpc');
 const ethRPC = new EthRPC(new HttpProvider('http://localhost:7545'));
 
 const utils = {
+
+  makeDMSProxy: async (beneficiary, owner, heartbeatPeriod) => {
+    // Get deployed instances of the proxy factory and dead man's switch contracts
+    const pf = await ProxyFactory.deployed();
+    const deadMaster = await Dead.deployed();
+
+    // Create a new proxy whose masterCopy is the deployed dead man's switch
+    const { logs } = await pf.createProxy(deadMaster.address, '');
+
+    // Get the proxy's address, and use it to create a local object representing the proxy
+    const creationLog = logs.find(log => log.event.includes('ProxyCreation'));
+    const deadProxy = Dead.at(creationLog.args.proxy);
+
+    // Initialize the proxy
+    await deadProxy.initDead(beneficiary, owner, heartbeatPeriod);
+
+    // Return the proxy object
+    return deadProxy;
+  },
+
   increaseTime: seconds =>
     new Promise((resolve, reject) => ethRPC.sendAsync({
       method: 'evm_increaseTime',
