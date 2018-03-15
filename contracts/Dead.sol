@@ -9,6 +9,8 @@ contract Dead {
     event Erc20Deposit(uint _amount, address _addr);
     event Erc20Withdraw(uint _amount, address _addr);
 
+    address masterCopy; // THIS MUST ALWAYS BE IN THE FIRST STORAGE SLOT
+
     address public beneficiary;
     address public owner;
     uint public heartbeatPeriod;
@@ -20,13 +22,13 @@ contract Dead {
     }
 
     /**
-    @dev constructor
+    @dev call this to initialize the contract
     @param _beneficiary can withdraw tokens after the owner has died
     @param _owner can withdraw tokens at any time, must try to stay alive
     @param _heartbeatPeriod the interval (in seconds) after which the owner is considered dead
     if no heartbeat it received
     */
-    function Dead(address _beneficiary, address _owner, uint _heartbeatPeriod) public {
+    function initDead(address _beneficiary, address _owner, uint _heartbeatPeriod) public {
         beneficiary = _beneficiary;
         owner = _owner;
         heartbeatPeriod = _heartbeatPeriod;
