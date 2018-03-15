@@ -1,10 +1,11 @@
 /* eslint-env mocha */
-/* global assert artifacts contract */
+/* global assert contract */
 
-const Dead = artifacts.require('Dead.sol');
-
-const { as, increaseTime, isEVMException } = require('./utils.js');
+const { as, increaseTime, isEVMException, makeDMSProxy } = require('./utils.js');
 const BN = require('bignumber.js');
+const fs = require('fs');
+
+const conf = JSON.parse(fs.readFileSync('./conf/config.json'));
 
 contract('Dead', (accounts) => {
   describe('Function: heartbeat', () => {
@@ -12,8 +13,13 @@ contract('Dead', (accounts) => {
     const revertFail = 'Tx expected to revert did not revert';
     const accountabilityFail = 'An unaccountable state change occurred';
 
+    let dead;
+
+    beforeEach(async () => {
+      dead = await makeDMSProxy(beneficiary, owner, conf.heartbeat);
+    });
+
     it('should increment lastHeartbeat by heartbeatPeriod', async () => {
-      const dead = await Dead.deployed();
       const heartbeatPeriod = await dead.heartbeatPeriod.call();
       // After half the heartbeat period has elapsed, we intend to invoke the heartbeat function
       const timeToHeartbeat = heartbeatPeriod.dividedToIntegerBy('2');
@@ -37,7 +43,6 @@ contract('Dead', (accounts) => {
     });
 
     it('should not let a non-owner increment lastHeartbeat', async () => {
-      const dead = await Dead.deployed();
       const errMsg = 'A non-owner was able to increment lastHeartbeat';
 
       const initialLastHeartbeat = await dead.lastHeartbeat.call();

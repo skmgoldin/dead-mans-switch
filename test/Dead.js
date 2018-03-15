@@ -1,9 +1,8 @@
 /* eslint-env mocha */
-/* global assert artifacts contract */
-
-const Dead = artifacts.require('Dead.sol');
+/* global assert contract */
 
 const fs = require('fs');
+const { makeDMSProxy } = require('./utils.js');
 
 const conf = JSON.parse(fs.readFileSync('./conf/config.json'));
 
@@ -11,9 +10,13 @@ contract('Dead', (accounts) => {
   describe('Function: Dead', () => {
     const [owner, beneficiary] = accounts;
 
-    it('should instantiate the contract\'s storage properly', async () => {
-      const dead = await Dead.deployed();
+    let dead;
 
+    beforeEach(async () => {
+      dead = await makeDMSProxy(beneficiary, owner, conf.heartbeat);
+    });
+
+    it('should instantiate the contract\'s storage properly', async () => {
       // Get all the stored data
       const storedHeartbeatPeriod = await dead.heartbeatPeriod.call();
       const storedOwner = await dead.owner.call();

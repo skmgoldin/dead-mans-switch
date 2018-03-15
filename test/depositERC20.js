@@ -1,27 +1,35 @@
 /* eslint-env mocha */
 /* global assert artifacts contract */
 
-const Dead = artifacts.require('Dead.sol');
 const Token = artifacts.require('tokens/eip20/EIP20.sol');
 
-const { depositTokens, isEVMException, getReceiptValue } = require('./utils.js');
+const { depositTokens, isEVMException, getReceiptValue, makeDMSProxy } = require('./utils.js');
 const BN = require('bignumber.js');
+const fs = require('fs');
+
+const conf = JSON.parse(fs.readFileSync('./conf/config.json'));
 
 contract('Dead', (accounts) => {
   describe('Function: depositERC20', () => {
-    const [owner] = accounts;
+    const [owner, beneficiary] = accounts;
+
+    let dead;
+    let token;
+
+    beforeEach(async () => {
+      dead = await makeDMSProxy(beneficiary, owner, conf.heartbeat);
+      token = await Token.new('1000', 'DEAD', '0', 'DED', { from: owner });
+    });
 
     it('should fire an event indicating the amount of tokens deposited ' +
        'and the token\'s address', async () => {
-      const dead = await Dead.deployed();
-      const token = await Token.deployed();
       const accountabilityFail = 'An unaccountable state change occurred';
       const logFail = 'A log does not exist or does not contain the expected data';
 
       const ownerInitialBalance = await token.balanceOf.call(owner);
 
       // Check the logs exist and contain valid data
-      const receipt = await depositTokens(owner, ownerInitialBalance, dead.address);
+      const receipt = await depositTokens(token.address, owner, ownerInitialBalance, dead.address);
       assert.strictEqual(getReceiptValue(receipt, '_addr').toString(), token.address, logFail);
       assert.strictEqual(getReceiptValue(receipt, '_amount').toString(), '1000', logFail);
 
@@ -37,8 +45,6 @@ contract('Dead', (accounts) => {
     });
 
     it('should not allow a deposit larger than the sender\'s balance', async () => {
-      const dead = await Dead.deployed();
-      const token = await Token.deployed();
       const errMsg = 'the owner was able to deposit with an amount greater than their initial balance';
 
       // Record the initial balances of both accounts
@@ -49,7 +55,7 @@ contract('Dead', (accounts) => {
       const attemptDepositAmount = ownerInitialBalance.add(new BN('1', 10));
 
       try {
-        await depositTokens(owner, attemptDepositAmount, dead.address);
+        await depositTokens(token.address, owner, attemptDepositAmount, dead.address);
       } catch (error) {
         assert(isEVMException(error), error.toString());
 
@@ -67,8 +73,6 @@ contract('Dead', (accounts) => {
     });
 
     it('should not allow a negative deposit', async () => {
-      const dead = await Dead.deployed();
-      const token = await Token.deployed();
       const errMsg = 'the owner was able to deposit a negative amount';
 
       // Record the initial balances of both accounts
@@ -79,7 +83,7 @@ contract('Dead', (accounts) => {
       const attemptDepositAmount = new BN('-1', 10);
 
       try {
-        await depositTokens(owner, attemptDepositAmount, dead.address);
+        await depositTokens(token.address, owner, attemptDepositAmount, dead.address);
       } catch (error) {
         assert(isEVMException(error), error.toString());
 
